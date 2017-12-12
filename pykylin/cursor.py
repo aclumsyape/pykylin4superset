@@ -26,8 +26,6 @@ class Cursor(object):
 
     def execute(self, operation, parameters={}, acceptPartial=True, limit=None, offset=0):
         sql = operation % parameters
-        # 将 'count' 改为 'ccount'。count 为 Kylin 关键字
-        sql = sql.replace('count', 'ccount')
         # Kylin 的时间格式不支持 时、分、秒
         pattern = re.compile(r' \d{2}:\d{2}:\d{2}')
         sql = pattern.sub('', sql)
@@ -71,7 +69,9 @@ class Cursor(object):
             column = meta[i]
             tpe = column[1]
             val = result[i]
-            if tpe == 'DATE':
+            if val is None:
+                pass
+            elif tpe == 'DATE':
                 val = parser.parse(val)
             elif tpe == 'BIGINT' or tpe == 'INT' or tpe == 'TINYINT':
                 val = int(val)
